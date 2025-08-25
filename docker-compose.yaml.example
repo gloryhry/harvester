@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  harvester:
+    # --------------------------------------------------------------------------
+    # 镜像配置
+    # --------------------------------------------------------------------------
+    # 请将 <your-github-username>/<your-github-repo> 替换为您的实际 GitHub 仓库路径
+    # 例如: ghcr.io/wzdnzd/harvester:latest
+    image: ghcr.io/gloryhry/harvester:latest
+    container_name: harvester
+    restart: unless-stopped
+
+    # --------------------------------------------------------------------------
+    # 卷挂载 (可选但推荐)
+    # --------------------------------------------------------------------------
+    volumes:
+      # 挂载您的自定义配置文件。
+      # 如果此文件不存在，容器启动时将自动创建一个默认的 config.yaml。
+      - ./config.yaml:/harvester/config.yaml
+
+      # 挂载数据卷以持久化存储结果、日志和快照。
+      - ./data:/harvester/data
+
+    # --------------------------------------------------------------------------
+    # 环境变量配置
+    # --------------------------------------------------------------------------
+    environment:
+      # --- GitHub 凭证 (必需) ---
+      # GitHub 用户会话的逗号分隔列表。
+      # 用于网页抓取，比 API 令牌更不容易受到某些操作的速率限制。
+      # 示例: "your_github_session_1,your_github_session_2"
+      - GITHUB_SESSIONS=""
+
+      # GitHub 个人访问令牌 (PATs) 的逗号分隔列表。
+      # 用于认证的 API 请求。
+      # 示例: "ghp_token1,ghp_token2"
+      - GITHUB_TOKENS=""
+
+      # --- 应用程序配置 (可选) ---
+      # 容器内配置文件的路径。
+      # 默认值: config.yaml
+      - CONFIG_FILE=config.yaml
+
+      # 应用程序的日志级别。
+      # 可选项: DEBUG, INFO, WARNING, ERROR
+      # 默认值: INFO
+      - LOG_LEVEL=INFO
+
+      # 在日志中显示统计信息的间隔（秒）。
+      # 默认值: 15
+      - STATS_INTERVAL=15
